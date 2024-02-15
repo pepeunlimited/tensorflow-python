@@ -1,0 +1,25 @@
+#
+#  MODULE.bazel
+#
+#  Copyright 2024 Pepe Unlimited
+#  Licensed under the MIT license, see associated LICENSE file for terms.
+#  See AUTHORS file for the list of project authors.
+#
+
+# https://github.com/bazelbuild/rules_python/releases
+bazel_dep(name = "rules_python", version = "0.31.0")
+
+# We next initialize the python toolchain using the extension.
+# You can set different Python versions in this block.
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    python_version = "3.11",
+)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.11",
+    requirements_lock = "//:requirements_lock.txt",
+)
+use_repo(pip, "pypi")
