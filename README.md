@@ -24,23 +24,59 @@ Getting started
 Bazel
 -----
 
-#### Run & Build
+#### Run/Build/Test
 
-Run binary
+##### src/lib
+
+Build ```lib``` binary
+```
+$ bazel build //src/lib:lib
+```
+
+Run ```haberdasher_test``` test
+```
+$ bazel test //src/lib:haberdasher_test
+```
+
+##### src/time_series_forecasting
+
+Run ```time_series_forecasting``` binary
 ```
 $ bazel run //src/time_series_forecasting:main
 ```
 
-Build binary
+Build ```time_series_forecasting``` binary
 ```
-$ bazel run //src/time_series_forecasting:main
+$ bazel build //src/time_series_forecasting:main
+```
+
+Run ```window_generator_test``` test
+```
+$ bazel test //src/time_series_forecasting:window_generator_test
+```
+
+Run ```example_test``` test
+```
+$ bazel test //src/time_series_forecasting:example_test
+```
+
+Run all tests
+```
+$ bazel test //src/time_series_forecasting:all
+```
+
+##### tests/another_test
+
+Run ```unittest_test```
+```
+$ bazel test //tests/another_test:unittest_test
 ```
 
 #### Requirements.txt  
 
-Initialize pip requirements file requires to create empty file. Name is defined in the ```MODULE.bazel```
+Initialize pip requires an a empty file. Name is defined in the ```MODULE.bazel```
 and ```BUILD``` files. See examples inside ```src/time-series-forecasting/BUILD```. Actual dependencies
-is defined in ```requirements.in```.
+are defined in ```requirements.in```.
 
 ```
 $ touch requirements_lock.txt
@@ -63,11 +99,17 @@ Documentation & Links
 <br/>
 [`bazelbuild/rules_python`](https://github.com/bazelbuild/rules_python/blob/main/docs/sphinx/getting-started.md)  
 [`bazel.build/python`](https://bazel.build/reference/be/python)  
+[`bazel.build/python/bzlmod`](https://bazel.build/reference/be/pythohttps://github.com/bazelbuild/rules_python/blob/main/examples/bzlmod/BUILD.bazeln)  
 <br/>
-
 [`bazel.build/command-line-reference`](https://bazel.build/reference/command-line-reference)  
 [`Bzlmod Migration Guide`](https://bazel.build/external/migration)  
 <br/>
+[`Getting Started With Testing in Python`](https://realpython.com/python-testing/)  
+[`Structuring Your Project`](https://docs.python-guide.org/writing/structure/)  
+<br/>
+[`How to search code with Sourcegraph — a cheat sheet`](https://sourcegraph.com/blog/how-to-search-cheat-sheet)  
+[`BUILD and py_test search`](https://sourcegraph.com/search?q=context:global+file:BUILD%24+AND+file:has.content%28py_test%29)  
+
 
 License
 -------

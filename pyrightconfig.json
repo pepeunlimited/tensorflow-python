@@ -1,0 +1,14 @@
+{
+  "useLibraryCodeForTypes": false,
+  "extraPaths": [
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_keras/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_tensorflow_macos/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_tensorflow/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_tensorflow_estimator/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_tensorflow_io_gcs_filesystem/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_tensorflow_io_gcs_filesystem/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_requests/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_pandas/site-packages",
+    "bazel-bin/src/time_series_forecasting/main.runfiles/rules_python~0.31.0~pip~pypi_311_numpy/site-packages"
+  ]
+}
