@@ -103,7 +103,29 @@ class WindowGenerator:
             ]
         )
 
-    def printer(self):
+    def split_window(self) -> None:
+        """
+        Features (xs)
+        A feature is an **input** variable—the x variable in simple linear regression.
+        A simple machine learning project might use a single feature, while a more sophisticated
+        machine learning project could use millions of features, specified as:
+
+        In the spam detector example, the features could include the following:
+        - words in the email text
+        - sender's address
+        - time of day the email was sent
+        - email contains the phrase "one weird trick."
+
+        Labels (ys)
+        A label is the thing we're **predicting—the** y variable in simple linear regression.
+        The label could be:
+        - the future price of wheat
+        - the kind of animal shown in a picture,
+        - the meaning of an audio clip, or just about anything.
+        """
+        raise NotImplementedError()
+
+    def printer(self) -> None:
         print(sys.version)
         print(requests.__version__)
         print(tf.__version__)
@@ -111,7 +133,7 @@ class WindowGenerator:
         print(np.__version__)
         print(keras.__version__)
 
-    def weather_dataset(self):
+    def weather_dataset(self) -> None:
         zip_path = keras.utils.get_file(
             origin="https://storage.googleapis.com/tensorflow/tf-keras-datasets/jena_climate_2009_2016.csv.zip",
             fname="jena_climate_2009_2016.zip",
