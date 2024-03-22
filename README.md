@@ -109,6 +109,7 @@ Documentation & Links
 <br/>
 [`How to search code with Sourcegraph — a cheat sheet`](https://sourcegraph.com/blog/how-to-search-cheat-sheet)  
 [`BUILD and py_test search`](https://sourcegraph.com/search?q=context:global+file:BUILD%24+AND+file:has.content%28py_test%29)  
+[`file:pyrightconfig\.json$ AND file:has.content(reportUnknownMemberType)`](https://sourcegraph.com/search?q=context:global+file:pyrightconfig%5C.json%24+AND+file:has.content%28reportUnknownMemberType%29)  
 
 
 License
