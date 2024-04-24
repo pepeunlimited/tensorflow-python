@@ -13,7 +13,9 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 import keras
-import os
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.axes as max
 
 
 class WindowGenerator:
@@ -93,7 +95,10 @@ class WindowGenerator:
         self.label_slices = slice(self.label_start, None)
         self.label_indices = np.arange(self.total_window_size, dtype=np.int64)[self.label_slices]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        print(repr(object))
+        """
         return "\n".join(
             [
                 f"Total window size: {self.total_window_size}",
@@ -103,8 +108,10 @@ class WindowGenerator:
             ]
         )
 
-    def split_window(self) -> None:
+    def split_window(self, features: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
         """
+        https://www.geeksforgeeks.org/different-ways-to-create-pandas-dataframe/
+
         Features (xs)
         A feature is an **input** variable—the x variable in simple linear regression.
         A simple machine learning project might use a single feature, while a more sophisticated
@@ -122,7 +129,49 @@ class WindowGenerator:
         - the future price of wheat
         - the kind of animal shown in a picture,
         - the meaning of an audio clip, or just about anything.
+
+        Typically, data in TensorFlow is packed into arrays where:
+        - outermost index is across examples (the "batch" dimension)
+        - middle indices are the "time" or "space" (width, height) dimension(s)
+        - innermost indices are the features.
+
+        :param features: TODO
+
+        :return tuple of the inputs and labels
         """
+
+        # https://stackoverflow.com/a/16816243
+        # [0]     means line 0 of your matrix
+        # [(0,0)] means cell at 0,0 of your matrix
+        # [0:1]   means lines 0 to 1 excluded of your matrix
+        # [:1]    excluding the first value means all lines until line 1 excluded
+        # [1:]    excluding the last param mean all lines starting form line 1  included
+        # [:]     excluding both means all lines
+        # [::2]   the addition of a second ':' is the sampling. (1 item every 2)
+        # [::]    exluding it means a sampling of 1
+        # [:,:]   simply uses a tuple (a single , represents an empty tuple) instead of an index.
+
+        inputs: tf.Tensor = features[:, self.input_slice, :]
+        labels: tf.Tensor = features[:, self.label_slices, :]
+
+        if self.label_columns:
+            labels = tf.stack(
+                [labels[:, :, self.column_indices[name]] for name in self.label_columns], axis=-1
+            )
+
+        # Slicing doesn't preserve static shape information, so set the shapes
+        # manually. This way the `tf.data.Datasets` are easier to inspect.
+        inputs.set_shape([None, self.input_width, None])
+        labels.set_shape([None, self.label_width, None])
+
+        print("All shapes are: (batch, time, feature)")
+        print(f"Window shape: {features.shape}")
+        print(f"Inputs shape: {inputs.shape}")
+        print(f"Labels shape: {labels.shape}")
+
+        return inputs, labels
+
+    def not_implemented(self) -> None:
         raise NotImplementedError()
 
     def printer(self) -> None:
@@ -132,71 +181,3 @@ class WindowGenerator:
         print(pd.__version__)
         print(np.__version__)
         print(keras.__version__)
-
-    def weather_dataset(self) -> None:
-        zip_path = keras.utils.get_file(
-            origin="https://storage.googleapis.com/tensorflow/tf-keras-datasets/jena_climate_2009_2016.csv.zip",
-            fname="jena_climate_2009_2016.zip",
-            extract=True,
-        )
-
-        csv_path, _ = os.path.splitext(f"{zip_path}.csv")
-        df = pd.read_csv(csv_path)
-        # Slice [start:stop:step], starting from index 5 take every 6th record.
-        df = df[5::6]
-
-        wv = df["wv (m/s)"]
-        bad_wv = wv == -9999.0
-        wv[bad_wv] = 0.0
-
-        # print(df["wv (m/s)"].min())
-
-        wv = df.pop("wv (m/s)")
-        max_wv = df.pop("max. wv (m/s)")
-
-        # Convert to radians.
-        wd_rad = df.pop("wd (deg)") * np.pi / 180
-
-        # Calculate the wind x and y components.
-        df["Wx"] = wv * np.cos(wd_rad)
-        df["Wy"] = wv * np.sin(wd_rad)
-        # Calculate the max wind x and y components.
-        df["max Wx"] = max_wv * np.cos(wd_rad)
-        df["max Wx"] = max_wv * np.sin(wd_rad)
-
-        # convert to seconds
-        date_time = pd.to_datetime(df.pop("Date Time"), format="%d.%m.%Y %H:%M:%S")
-        timestamp_s = date_time.map(pd.Timestamp.timestamp)
-        # print(timestamp_s)
-
-        # Time of day" and "Time of year" signals
-        day = 24 * 60 * 60
-        year = (365.2425) * day
-
-        df["Day sin"] = np.sin(timestamp_s * (2 * np.pi / day))
-        df["Day cos"] = np.cos(timestamp_s * (2 * np.pi / day))
-        df["Year sin"] = np.sin(timestamp_s * (2 * np.pi / year))
-        df["Year cos"] = np.cos(timestamp_s * (2 * np.pi / year))
-
-        # split the data
-        # column_indices = {name: i for i, name in enumerate(df.columns)}
-
-        n = len(df)
-        train_df = df[0 : int(n * 0.7)]
-        val_df = df[int(n * 0.7) : int(n * 0.9)]
-        test_df = df[int(n * 0.9) :]
-
-        # num_features = df.shape[1]
-        # print(num_features)
-
-        # normalize the data
-        train_mean = train_df.mean()
-        train_std = train_df.std()
-
-        train_df = (train_df - train_mean) / train_std
-        val_df = (val_df - train_mean) / train_std
-        test_df = (test_df - train_mean) / train_std
-
-        # for col in df.columns:
-        #    print(col)
-        # print(df.head())

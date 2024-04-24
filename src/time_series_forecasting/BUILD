@@ -15,20 +15,23 @@ py_binary(
     deps = [
         requirement("requests"),
         requirement("tensorflow"),
-        requirement("pandas")
+        requirement("pandas"),
+        requirement("matplotlib")
     ],
 )
 
 py_library(
     name = "lib",
     srcs = [
-        "window_generator.py"
+        "window_generator.py",
+        "dataset.py"
     ],
     visibility = ["//visibility:public"],
     deps = [
         requirement("requests"),
         requirement("tensorflow"),
-        requirement("pandas")
+        requirement("pandas"),
+        requirement("matplotlib")
     ],
 )
 
@@ -41,6 +44,30 @@ py_test(
     timeout = "short",
     deps = [
         "//src/time_series_forecasting:lib",
+    ],
+)
+
+# @see data files https://stackoverflow.com/a/42307073/3913343
+
+filegroup(
+    name = "data_dataset",
+    srcs = glob([
+        "tests/input/*.txt"
+    ]),
+)
+
+py_test(
+    name = "dataset_test",
+    srcs = [
+        "tests/dataset_test.py",
+    ],
+    main = "dataset_test.py",
+    timeout = "short",
+    deps = [
+        "//src/time_series_forecasting:lib",
+    ],
+    data = [
+        "//src/time_series_forecasting:data_dataset"
     ],
 )
 

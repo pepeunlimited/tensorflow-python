@@ -55,6 +55,15 @@ Run ```window_generator_test``` test
 $ bazel test //src/time_series_forecasting:window_generator_test
 ```
 
+Run ```dataset_test``` test  
+
+Plot files are written to ```SRCROOT/bazel-out/darwin_arm64-fastbuild/testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip```
+using the ```TEST_UNDECLARED_OUTPUTS_DIR``` environment variable.  
+
+```
+$ bazel test  --test_output=all //src/time_series_forecasting:dataset_test
+```
+
 Run ```example_test``` test
 ```
 $ bazel test //src/time_series_forecasting:example_test

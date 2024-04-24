@@ -12,6 +12,7 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 import keras
+import matplotlib as mpl
 
 
 def main():
@@ -21,6 +22,7 @@ def main():
     print(pd.__version__)
     print(np.__version__)
     print(keras.__version__)
+    print(mpl.__version__)
 
 
 if __name__ == "__main__":
