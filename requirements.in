@@ -1,6 +1,8 @@
 --extra-index-url https://pypi.org/simple/
 
 requests==2.31.0
-tensorflow==2.15.0
-pandas==2.2.0
+tensorflow==2.16.1
+pandas==2.2.2
+pandas-stubs==2.2.1.240316
 matplotlib==3.8.4
+seaborn==0.13.2

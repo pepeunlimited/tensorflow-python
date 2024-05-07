@@ -57,12 +57,18 @@ $ bazel test //src/time_series_forecasting:window_generator_test
 
 Run ```dataset_test``` test  
 
-Plot files are written to ```SRCROOT/bazel-out/darwin_arm64-fastbuild/testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip```
+Plot files are written to ```$SRCROOT/bazel-testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip```
 using the ```TEST_UNDECLARED_OUTPUTS_DIR``` environment variable.  
 
 ```
-$ bazel test  --test_output=all //src/time_series_forecasting:dataset_test
+$ bazel test --test_output=all //src/time_series_forecasting:dataset_test
 ```
+
+unzip outputs.zip  
+```
+$ unzip bazel-testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip -d .
+```
+
 
 Run ```example_test``` test
 ```
@@ -119,6 +125,9 @@ Documentation & Links
 [`How to search code with Sourcegraph — a cheat sheet`](https://sourcegraph.com/blog/how-to-search-cheat-sheet)  
 [`BUILD and py_test search`](https://sourcegraph.com/search?q=context:global+file:BUILD%24+AND+file:has.content%28py_test%29)  
 [`file:pyrightconfig\.json$ AND file:has.content(reportUnknownMemberType)`](https://sourcegraph.com/search?q=context:global+file:pyrightconfig%5C.json%24+AND+file:has.content%28reportUnknownMemberType%29)  
+<br/>
+[`Understanding-LSTMs`](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
+[`Simple LSTM`](https://github.com/nicodjimenez/lstm)
 
 
 License

@@ -16,7 +16,9 @@ py_binary(
         requirement("requests"),
         requirement("tensorflow"),
         requirement("pandas"),
-        requirement("matplotlib")
+        requirement("pandas-stubs"),
+        requirement("matplotlib"),
+        requirement("seaborn")
     ],
 )
 
@@ -31,7 +33,9 @@ py_library(
         requirement("requests"),
         requirement("tensorflow"),
         requirement("pandas"),
-        requirement("matplotlib")
+        requirement("pandas-stubs"),
+        requirement("matplotlib"),
+        requirement("seaborn")
     ],
 )
 
@@ -40,7 +44,7 @@ py_test(
     srcs = [
         "tests/window_generator_test.py",
     ],
-    main = "window_generator_test.py",
+    main = "tests/window_generator_test.py",
     timeout = "short",
     deps = [
         "//src/time_series_forecasting:lib",
@@ -61,7 +65,7 @@ py_test(
     srcs = [
         "tests/dataset_test.py",
     ],
-    main = "dataset_test.py",
+    main = "tests/dataset_test.py",
     timeout = "short",
     deps = [
         "//src/time_series_forecasting:lib",
@@ -76,7 +80,7 @@ py_test(
     srcs = [
         "tests/example_test.py"
     ],
-    main = "example_test.py",
+    main = "tests/example_test.py",
     timeout = "short",
     deps = [
         "//src/time_series_forecasting:lib",

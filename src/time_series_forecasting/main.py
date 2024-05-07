@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 import keras
 import matplotlib as mpl
+import seaborn as sns
 
 
 def main():
@@ -23,6 +24,7 @@ def main():
     print(np.__version__)
     print(keras.__version__)
     print(mpl.__version__)
+    print(sns.__version__)
 
 
 if __name__ == "__main__":
