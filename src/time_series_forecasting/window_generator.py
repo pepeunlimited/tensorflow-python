@@ -16,6 +16,11 @@ import keras
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.axes as max
+import seaborn as sns
+import os
+
+mpl.rcParams["figure.figsize"] = (8, 6)
+mpl.rcParams["axes.grid"] = False
 
 
 class WindowGenerator:
@@ -31,17 +36,21 @@ class WindowGenerator:
     val_df: pd.DataFrame
     test_df: pd.DataFrame
 
-    # columns
+    # column parameters
     label_columns: List[str]
     label_columns_indices: dict[str, int]
-    columns_indices: dict[pd.Index, int]
+    column_indices: dict[str, int]
 
     # parameters
     total_window_size: int
+
+    # input parameters
     input_slice: slice
-    input_slices: np.ndarray[int, np.dtype[np.int64]]
+    input_indices: np.ndarray[int, np.dtype[np.int64]]
+
+    # label parameters
     label_start: int
-    label_slices: slice
+    label_slice: slice
     label_indices: np.ndarray[int, np.dtype[np.int64]]
 
     def __init__(
@@ -77,7 +86,7 @@ class WindowGenerator:
 
         # work out the label column indices.
         self.label_columns = label_columns
-        if not label_columns:
+        if label_columns is not None:
             self.label_columns_indices = {name: i for i, name in enumerate(label_columns)}
 
         self.column_indices = {name: i for i, name in enumerate(train_df.columns)}
@@ -90,10 +99,11 @@ class WindowGenerator:
         self.total_window_size = input_width + shift
 
         self.input_slice = slice(0, input_width)
-        self.input_slices = np.arange(self.total_window_size, dtype=np.int64)[self.input_slice]
+        self.input_indices = np.arange(self.total_window_size, dtype=np.int64)[self.input_slice]
+
         self.label_start = self.total_window_size - self.label_width
-        self.label_slices = slice(self.label_start, None)
-        self.label_indices = np.arange(self.total_window_size, dtype=np.int64)[self.label_slices]
+        self.label_slice = slice(self.label_start, None)
+        self.label_indices = np.arange(self.total_window_size, dtype=np.int64)[self.label_slice]
 
     def __repr__(self) -> str:
         """
@@ -102,7 +112,7 @@ class WindowGenerator:
         return "\n".join(
             [
                 f"Total window size: {self.total_window_size}",
-                f"Input indices: {self.input_slices}",
+                f"Input indices: {self.input_indices}",
                 f"Label indices: {self.label_indices}",
                 f"Label column name(s): {self.label_columns}",
             ]
@@ -152,7 +162,7 @@ class WindowGenerator:
         # [:,:]   simply uses a tuple (a single , represents an empty tuple) instead of an index.
 
         inputs: tf.Tensor = features[:, self.input_slice, :]
-        labels: tf.Tensor = features[:, self.label_slices, :]
+        labels: tf.Tensor = features[:, self.label_slice, :]
 
         if self.label_columns:
             labels = tf.stack(
@@ -181,3 +191,63 @@ class WindowGenerator:
         print(pd.__version__)
         print(np.__version__)
         print(keras.__version__)
+
+    def plot(
+        self,
+        inputs: tf.Tensor,
+        labels: tf.Tensor,
+        model=None,
+        plot_col: str = "T (degC)",
+        max_subplots: int = 3,
+    ) -> None:
+        plt.figure(figsize=(12, 8))
+        plot_col_index: int = self.column_indices[plot_col]
+        max_n = min(max_subplots, len(inputs))
+        for n in range(max_n):
+            plt.subplot(max_n, 1, n + 1)
+            plt.ylabel(f"{plot_col} [normed]")
+            plt.plot(
+                self.input_indices,
+                inputs[n, :, plot_col_index],
+                label="Inputs",
+                marker=".",
+                zorder=-10,
+            )
+
+            if self.label_columns:
+                label_col_index = self.label_columns_indices.get(plot_col, None)
+            else:
+                label_col_index = plot_col_index
+
+            if label_col_index is None:
+                continue
+
+            plt.scatter(
+                self.label_indices,
+                labels[n, :, label_col_index],
+                edgecolors="k",
+                label="Labels",
+                c="#2ca02c",
+                s=64,
+            )
+
+            if model is not None:
+                predictions = model(inputs)
+                plt.scatter(
+                    self.label_indices,
+                    predictions[n, :, label_col_index],
+                    marker="X",
+                    edgecolors="k",
+                    label="Predictions",
+                    c="#ff7f0e",
+                    s=64,
+                )
+
+            if n == 0:
+                plt.legend()
+
+        plt.xlabel("Time [h]")
+        plt.savefig(
+            fname=f"{os.getenv('TEST_UNDECLARED_OUTPUTS_DIR')}/{plot_col.replace(' ', '').replace('(', '').replace(')', '')}_plot.png"
+        )
+        plt.close()
