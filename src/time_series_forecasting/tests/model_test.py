@@ -895,7 +895,9 @@ class TestModel(unittest.TestCase):
         num_features = 19
         units = 32
 
-        feedback_model = m.Feedback(units=units, out_steps=out_steps, num_features=num_features)
+        feedback_model: m.Feedback = m.Feedback(
+            units=units, out_steps=out_steps, num_features=num_features
+        )
 
         # `WindowGenerator` returns all features as labels if you don't set the `label_columns`
         # argument.
