@@ -7,7 +7,7 @@
 #
 
 # https://github.com/bazelbuild/rules_python/releases
-bazel_dep(name = "rules_python", version = "0.31.0")
+bazel_dep(name = "rules_python", version = "0.34.0")
 
 # We next initialize the python toolchain using the extension.
 # You can set different Python versions in this block.

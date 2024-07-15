@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import matplotlib.axes as max
 import seaborn as sns
 import os
+import re
 
 mpl.rcParams["figure.figsize"] = (8, 6)
 mpl.rcParams["axes.grid"] = False
@@ -46,12 +47,36 @@ class WindowGenerator:
 
     # input parameters
     input_slice: slice
-    input_indices: np.ndarray[int, np.dtype[np.int64]]
+    input_indices: np.ndarray[int, np.dtype[np.int32]]
 
     # label parameters
     label_start: int
     label_slice: slice
-    label_indices: np.ndarray[int, np.dtype[np.int64]]
+    label_indices: np.ndarray[int, np.dtype[np.int32]]
+
+    @property
+    def train(self) -> tf.data.Dataset:
+        return self.make_dataset(self.train_df)
+
+    @property
+    def val(self) -> tf.data.Dataset:
+        return self.make_dataset(self.val_df)
+
+    @property
+    def test(self) -> tf.data.Dataset:
+        return self.make_dataset(self.test_df)
+
+    @property
+    def example(self) -> tuple[tf.Tensor, tf.Tensor]:
+        """
+        Get and cache an example batch of `inputs, lablels` for plotting.
+        """
+        result: tuple[tf.Tensor, tf.Tensor] = getattr(self, "_example", None)
+        if result is None:
+            # No example batch found, so get one from the `.train` dataset
+            result = next(iter(self.train))
+            self._example = result
+        return result
 
     def __init__(
         self,
@@ -99,11 +124,11 @@ class WindowGenerator:
         self.total_window_size = input_width + shift
 
         self.input_slice = slice(0, input_width)
-        self.input_indices = np.arange(self.total_window_size, dtype=np.int64)[self.input_slice]
+        self.input_indices = np.arange(self.total_window_size, dtype=np.int32)[self.input_slice]
 
         self.label_start = self.total_window_size - self.label_width
         self.label_slice = slice(self.label_start, None)
-        self.label_indices = np.arange(self.total_window_size, dtype=np.int64)[self.label_slice]
+        self.label_indices = np.arange(self.total_window_size, dtype=np.int32)[self.label_slice]
 
     def __repr__(self) -> str:
         """
@@ -196,9 +221,10 @@ class WindowGenerator:
         self,
         inputs: tf.Tensor,
         labels: tf.Tensor,
-        model=None,
+        model: keras.models.Sequential | None,
         plot_col: str = "T (degC)",
         max_subplots: int = 3,
+        fname: str = "",
     ) -> None:
         plt.figure(figsize=(12, 8))
         plot_col_index: int = self.column_indices[plot_col]
@@ -247,7 +273,24 @@ class WindowGenerator:
                 plt.legend()
 
         plt.xlabel("Time [h]")
-        plt.savefig(
-            fname=f"{os.getenv('TEST_UNDECLARED_OUTPUTS_DIR')}/{plot_col.replace(' ', '').replace('(', '').replace(')', '')}_plot.png"
-        )
+        if "".__eq__(fname):
+            plot_col_name = re.sub(r"[\s\(\)]", "", plot_col)
+            fname = f"{os.getenv('TEST_UNDECLARED_OUTPUTS_DIR')}/{plot_col_name}_plot.png"
+        else:
+            fname = f"{os.getenv('TEST_UNDECLARED_OUTPUTS_DIR')}/{fname}.png"
+        plt.savefig(fname=fname)
         plt.close()
+
+    def make_dataset(self, data: pd.DataFrame) -> tf.data.Dataset:
+        npdata: np.ndarray[int, np.dtype[np.float32]] = np.array(data, dtype=np.float32)
+        ds: tf.data.Dataset = keras.utils.timeseries_dataset_from_array(
+            data=npdata,
+            targets=None,
+            sequence_length=self.total_window_size,
+            sequence_stride=1,
+            shuffle=True,
+            batch_size=32,
+        )
+        # 'ds.map' insert the parameters for 'split_window' function
+        ds = ds.map(self.split_window)  # self.split_window is bound method, this is black magic
+        return ds

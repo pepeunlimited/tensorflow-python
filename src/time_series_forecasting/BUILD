@@ -26,7 +26,8 @@ py_library(
     name = "lib",
     srcs = [
         "window_generator.py",
-        "dataset.py"
+        "dataset.py",
+        "model.py"
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -36,6 +37,18 @@ py_library(
         requirement("pandas-stubs"),
         requirement("matplotlib"),
         requirement("seaborn")
+    ],
+)
+
+py_test(
+    name = "model_test",
+    srcs = [
+        "tests/model_test.py",
+    ],
+    main = "tests/model_test.py",
+    timeout = "moderate",
+    deps = [
+        "//src/time_series_forecasting:lib",
     ],
 )
 

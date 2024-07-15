@@ -1,5 +1,5 @@
 #
-#  example_test.py
+#  window_generator_test.py
 #
 #  Copyright 2024 Pepe Unlimited
 #  Licensed under the MIT license, see associated LICENSE file for terms.
@@ -151,6 +151,7 @@ class TestWindowGenerator(unittest.TestCase):
                 "Year cos": 18,
             },
         )
+        test = wg.column_indices["T (degC)"]
         self.assertEqual(wg.input_slice, slice(0, 6, None))
         self.assertListEqual(wg.input_indices.tolist(), [0, 1, 2, 3, 4, 5])
         self.assertEqual(wg.label_start, 6)
@@ -194,6 +195,58 @@ class TestWindowGenerator(unittest.TestCase):
         self.assertTrue(
             os.path.isfile(f"{os.getenv('TEST_UNDECLARED_OUTPUTS_DIR')}/pmbar_plot.png")
         )
+
+    def test_make_dataset(self):
+        train_df, val_df, test_df = ds.weather_dataset()
+
+        wg = tsf.WindowGenerator(
+            input_width=6,
+            label_width=1,
+            shift=1,
+            train_df=train_df,
+            val_df=val_df,
+            test_df=test_df,
+            label_columns=["T (degC)"],
+        )
+        train_ds = wg.make_dataset(data=train_df)
+        # print(train_ds.element_spec)
+
+    def test_train_property(self):
+        train_df, val_df, test_df = ds.weather_dataset()
+
+        wg = tsf.WindowGenerator(
+            input_width=6,
+            label_width=1,
+            shift=1,
+            train_df=train_df,
+            val_df=val_df,
+            test_df=test_df,
+            label_columns=["T (degC)"],
+        )
+        take_ds: tf.data.Dataset = wg.train.take(1)
+
+        inputs: tf.Tensor
+        labels: tf.Tensor
+        for inputs, labels in take_ds:
+            # print(f"Inputs shape (batch, time, features): {inputs.shape}")
+            # print(f"Labels shape (batch, time, features): {labels.shape}")
+            self.assertListEqual(np.array(inputs.shape).tolist(), [32, 6, 19])
+            self.assertListEqual(np.array(labels.shape).tolist(), [32, 1, 1])
+
+    def test_example_property(self):
+        train_df, val_df, test_df = ds.weather_dataset()
+
+        wg = tsf.WindowGenerator(
+            input_width=6,
+            label_width=1,
+            shift=1,
+            train_df=train_df,
+            val_df=val_df,
+            test_df=test_df,
+            label_columns=["T (degC)"],
+        )
+
+        print(type(wg.example))
 
 
 if __name__ == "__main__":

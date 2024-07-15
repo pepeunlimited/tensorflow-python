@@ -55,6 +55,11 @@ Run ```window_generator_test``` test
 $ bazel test //src/time_series_forecasting:window_generator_test
 ```
 
+unzip ```window_generator_test``` outputs.zip  
+```
+$ unzip bazel-testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip -d src/time_series_forecasting/tests/output
+```
+
 Run ```dataset_test``` test  
 
 Plot files are written to ```$SRCROOT/bazel-testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip```
@@ -64,11 +69,20 @@ using the ```TEST_UNDECLARED_OUTPUTS_DIR``` environment variable.
 $ bazel test --test_output=all //src/time_series_forecasting:dataset_test
 ```
 
-unzip outputs.zip  
+unzip ```dataset_test``` outputs.zip  
 ```
-$ unzip bazel-testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip -d .
+$ unzip bazel-testlogs/src/time_series_forecasting/dataset_test/test.outputs/outputs.zip -d src/time_series_forecasting/tests/output
 ```
 
+Run ```model_test``` test
+```
+$ bazel test --test_output=all //src/time_series_forecasting:model_test
+```
+
+unzip ```model_test``` outputs.zip  
+```
+$ unzip bazel-testlogs/src/time_series_forecasting/model_test/test.outputs/outputs.zip -d src/time_series_forecasting/tests/output
+```
 
 Run ```example_test``` test
 ```

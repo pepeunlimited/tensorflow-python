@@ -285,12 +285,12 @@ def date_time_plot() -> None:
 
     fft: complex = tf.signal.rfft(df["T (degC)"])
     # print(type(fft))
-    f_per_dataset: np.ndarray[int, np.dtype[np.int64]] = np.arange(0, len(fft))
+    f_per_dataset: np.ndarray[int, np.dtype[np.int32]] = np.arange(0, len(fft))
 
     n_samples_h = len(df["T (degC)"])
     hours_per_year = 24 * 365.2524
     years_per_dataset = n_samples_h / (hours_per_year)
-    f_per_year: np.ndarray[float, np.dtype[np.float64]] = f_per_dataset / years_per_dataset
+    f_per_year: np.ndarray[float, np.dtype[np.float32]] = f_per_dataset / years_per_dataset
 
     plt.step(f_per_year, np.abs(fft))
     plt.xscale("log")
