@@ -13,3 +13,8 @@
 /.clwb/
 
 MODULE.bazel.lock
+
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store

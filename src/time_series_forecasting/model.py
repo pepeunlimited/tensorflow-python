@@ -8,7 +8,6 @@
 
 import keras
 import tensorflow as tf
-from tensorflow.python.util.dispatch import register_unary_elementwise_api
 
 
 class Model(keras.Model):
